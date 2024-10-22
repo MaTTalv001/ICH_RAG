@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./app:/app
+      - ./data:/data
+      - vectorstore:/vectorstore
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    command: streamlit run /app/main.py
+
+volumes:
+  vectorstore:

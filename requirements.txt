@@ -9,3 +9,5 @@ chromadb==0.5.15
 sentence-transformers
 streamlit
 python-dotenv
+requests==2.32.3
+pdfminer.six==20240706

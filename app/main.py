@@ -4,6 +4,7 @@ from qa import ICHGuidelineQA
 import os
 import glob
 import pandas as pd
+from ich_downloader import ICHDownloader
 
 st.title("ICH Guidelines QA System")
 
@@ -69,12 +70,28 @@ elif mode == "RAG (Q&A)" :  # RAGモード
                 answer = qa_system.answer_question(question)
                 sources = qa_system.get_relevant_sources(question)
             
-            st.write("回答:")
-            st.write(answer)
+            # 回答を目立つように表示
+            st.markdown("### 💡 回答")
+            st.markdown(f">{answer}")
             
-            st.write("参照ソース:")
-            for source in sources:
-                st.write(f"- {source['title']} ({source['code']})")
+            # 参照ソースをタブで表示
+            st.markdown("### 📚 参照ソース")
+            tabs = st.tabs([f"ソース {i+1}" for i in range(len(sources))])
+            
+            for tab, source in zip(tabs, sources):
+                with tab:
+                    st.markdown(f"**ガイドライン:** {source['title']} ({source['code']})")
+                    # デバッグ情報を表示
+                    # st.markdown("**Debug Info:**")
+                    # st.write(source)  # すべてのソース情報を表示
+                    
+                    filename = source.get('source_file')
+                    if filename:
+                        url = f"https://www.pmda.go.jp/files/{filename}"
+                        st.markdown(f"[元のPDFを開く]({url}) 📄")
+                    st.markdown(f"**カテゴリ:** {source['category']}")
+                    st.markdown("**関連箇所:**")
+                    st.markdown(f"```\n{source['preview']}\n```")
     except Exception as e:
         st.error(f"エラーが発生しました: {str(e)}")
 
@@ -83,3 +100,10 @@ else: #データセット確認
     
     df = pd.read_csv("/data/dataset/ich.csv") 
     st.dataframe(df)
+    
+    if st.button("ガイドラインをダウンロード"):
+        try:
+            downloader = ICHDownloader()
+            downloader.process_all(df)
+        except Exception as e:
+            st.error(f"エラーが発生しました: {str(e)}")

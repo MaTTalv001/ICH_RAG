@@ -63,16 +63,29 @@ ICHガイドラインの内容に基づいて、質問に対して正確かつ�
 
     def get_relevant_sources(self, question: str) -> list:
         """関連する参照元を取得"""
-        # 直接similarity_searchを使用
         docs = self.vectorstore.similarity_search(question, k=3)
         sources = []
+        
+        used_chunks = set()
+        
         for doc in docs:
             if hasattr(doc, 'metadata'):
-                source = {
-                    'title': doc.metadata.get('title', 'タイトル不明'),
-                    'code': doc.metadata.get('code', 'コード不明'),
-                    'category': doc.metadata.get('category', 'カテゴリ不明'),
-                    'content': doc.page_content[:100] + '...'  # コンテンツの一部も表示
-                }
-                sources.append(source)
+                chunk_preview = doc.page_content[:200].replace('\n', ' ').strip()
+                
+                if chunk_preview not in used_chunks:
+                    used_chunks.add(chunk_preview)
+                    
+                    # メタデータの内容を確認
+                    # print("Metadata:", doc.metadata)  # デバッグ用
+                    
+                    source = {
+                        'title': doc.metadata.get('title', 'タイトル不明'),
+                        'code': doc.metadata.get('code', 'コード不明'),
+                        'category': doc.metadata.get('category', 'カテゴリ不明'),
+                        'source_file': doc.metadata['source_file'] if 'source_file' in doc.metadata else None,  # 明示的に取得
+                        'preview': chunk_preview
+                    }
+                    # print("Source:", source)  # デバッグ用
+                    sources.append(source)
+        
         return sources

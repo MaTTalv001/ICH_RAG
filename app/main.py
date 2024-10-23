@@ -3,13 +3,14 @@ from processor import ICHGuidelineProcessor
 from qa import ICHGuidelineQA
 import os
 import glob
+import pandas as pd
 
 st.title("ICH Guidelines QA System")
 
 # モード選択
 mode = st.sidebar.selectbox(
     "モードを選択してください",
-    ["RAG (Q&A)", "ベクトル化"]
+    ["RAG (Q&A)", "ベクトル化", "データセット"]
 )
 
 if mode == "ベクトル化":
@@ -55,7 +56,7 @@ if mode == "ベクトル化":
         except Exception as e:
             st.error(f"エラーが発生しました: {str(e)}")
 
-else:  # RAGモード
+elif mode == "RAG (Q&A)" :  # RAGモード
     st.header("ICHガイドラインQ&A")
     
     try:
@@ -76,3 +77,9 @@ else:  # RAGモード
                 st.write(f"- {source['title']} ({source['code']})")
     except Exception as e:
         st.error(f"エラーが発生しました: {str(e)}")
+
+else: #データセット確認
+    st.header("収録データセットの確認")
+    
+    df = pd.read_csv("/data/dataset/ich.csv") 
+    st.dataframe(df)

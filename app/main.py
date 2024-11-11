@@ -6,6 +6,16 @@ import glob
 import pandas as pd
 from ich_downloader import ICHDownloader
 
+
+# グローバルなインスタンス保持
+@st.cache_resource
+def initialize_qa_system():
+    return ICHGuidelineQA(persist_directory="/vectorstore/ich_db")
+
+# セッション状態の効率的な管理
+if "qa_system" not in st.session_state:
+    st.session_state.qa_system = initialize_qa_system()
+
 st.title("ICH Guidelines Q&A System")
 
 # サイドバーでモード選択
@@ -48,7 +58,7 @@ if mode == "ユーザーモード":
                         label="",
                         value=source['preview'],
                         height=300,
-                        disabled=True
+                        disabled=False
                     )
     except Exception as e:
         st.error(f"エラーが発生しました: {str(e)}")

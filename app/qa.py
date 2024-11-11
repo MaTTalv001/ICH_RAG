@@ -22,7 +22,7 @@ class ICHGuidelineQA:
         # ChatGPTの初期化
         self.llm = ChatOpenAI(
             temperature=0,
-            model_name="gpt-4"
+            model_name="gpt-4o-mini-2024-07-18"
         )
 
         # プロンプトテンプレートの設定
@@ -70,7 +70,7 @@ ICHガイドラインの内容に基づいて、質問に対して正確かつ�
         
         for doc in docs:
             if hasattr(doc, 'metadata'):
-                chunk_preview = doc.page_content[:200].replace('\n', ' ').strip()
+                chunk_preview = doc.page_content[:500].replace('\n', ' ').strip()
                 
                 if chunk_preview not in used_chunks:
                     used_chunks.add(chunk_preview)

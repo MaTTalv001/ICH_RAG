@@ -44,8 +44,8 @@ class ICHGuidelineProcessor:
         from langchain.text_splitter import RecursiveCharacterTextSplitter
 
         splitter = RecursiveCharacterTextSplitter(
-            chunk_size=800,
-            chunk_overlap=150,
+            chunk_size=2400,
+            chunk_overlap=500,
             separators=["\n\n", "\n", "。", "、", " "],
             length_function=len,
         )
